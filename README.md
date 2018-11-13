@@ -21,7 +21,7 @@ I do (and have done) tons of cool stuff, like:
 * research on computer vision and grape counting in vineyards for the [Collective Embodied Intelligence Lab](google.com)
 * designing [live synthesis of dance patterns for a Dance Dance Revolution game](http://www.drewdunne.com/Dance-Dance-Evolution/)
 * building [an infantile jaundice phototherapy device](https://ewh.engineering.cornell.edu/)
-* being a 2018 Kessler Fellow, through which I interned at PRIME Coalition, a non-profit funding early stage clean-tech companies - [Check out my presentation here!](/img/KFP_Presentation_Michael.pdf)
+* being a 2018 Kessler Fellow, through which I interned at [PRIME Coalition](https://primecoalition.org/), a non-profit funding early stage clean-tech companies - [Check out my presentation here!](/img/KFP_Presentation_Michael.pdf)
 
 
 I'm also on the internet! Connect with me via
