@@ -1,3 +1,3 @@
-# msolomentsev.github.io
-Personal Website
+# Michael Solomentsev
+ Website
 TEST
