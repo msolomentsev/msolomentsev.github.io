@@ -18,7 +18,7 @@ I'm interested in a lot of things, including
 
 I do (and have done) tons of cool stuff, like:
 * running the [Cornell Maker Lab](https://cornellmakerclub.tumblr.com/)
-* research on computer vision and grape counting in vineyards for the [Collective Embodied Intelligence Lab](google.com)
+* research on [computer vision and grape counting in vineyards](/img/grape_summary.pdf) for the [Collective Embodied Intelligence Lab](https://cei.ece.cornell.edu/)
 * designing [live synthesis of dance patterns for a Dance Dance Revolution game](http://www.drewdunne.com/Dance-Dance-Evolution/)
 * building [an infantile jaundice phototherapy device](https://ewh.engineering.cornell.edu/)
 * being a 2018 Kessler Fellow, through which I interned at [PRIME Coalition](https://primecoalition.org/), a non-profit funding early stage clean-tech companies - [Check out my presentation here!](/img/KFP_Presentation_Michael.pdf)
