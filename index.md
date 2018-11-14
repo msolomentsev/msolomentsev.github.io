@@ -1,6 +1,6 @@
 Hi! I'm 
 * Michael
-* an undergrad studying electrical engineering at Cornell
+* an undergrad studying electrical engineering (Cornell '19)
 * a Phoenix, AZ native (go Suns!)
 * tall and skinny
 * an avid rock climber
