@@ -1,22 +1,20 @@
 Hi! I'm 
 * Michael
-* an undergrad studying electrical engineering (Cornell '19)
+* a graduate student at UT Austin's Semiconductor Power Electronics Center
 * a Phoenix, AZ native (go Suns!)
 * tall and skinny
 * an avid rock climber
 * usually reading
-* a maker
 
 
 I'm interested in a lot of things, including
 * grid-scale renewable energy integration
 * power electronics
 * boredom in the age of the internet
-* men's fashion
 * cooking
 
 
-I do (and have done) tons of cool stuff, like:
+I have done lots of cool stuff, like:
 * running the [Cornell Maker Lab](https://cornellmakerclub.tumblr.com/)
 * research on [computer vision and grape counting in vineyards](/img/grape_summary.pdf) for the [Collective Embodied Intelligence Lab](https://cei.ece.cornell.edu/)
 * designing [live synthesis of dance patterns for a Dance Dance Revolution game](http://www.drewdunne.com/Dance-Dance-Evolution/)
