@@ -1,4 +1,13 @@
 title: Michael Solomentsev's Website
 description: Website & Blog
 show_downloads: false
-theme: jekyll-theme-minimal
+theme: minima
+
+author:
+  name: Michael Solomentsev
+  email: "michael.solomentsev@gmail.com"
+
+minima:
+  skin: dark
+  nav_pages:
+    - blogIndex.md
