@@ -1,7 +1,13 @@
-title: Michael Solomentsev's Website
-description: Website & Blog
+title: Michael Solomentsev
+#description: Website & Blog
 show_downloads: false
-remote_theme: "jekyll/minima@1e8a445"
+blogurl:
+
+plugins:
+  - jekyll-remote-theme
+
+
+remote_theme: "jekyll/minima"
 
 author:
   name: Michael Solomentsev
@@ -9,5 +15,6 @@ author:
 
 minima:
   skin: dark
-  nav_pages:
-    - blogIndex.md
+  header_pages:
+  - index.html
+  - blogIndex.md

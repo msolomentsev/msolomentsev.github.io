@@ -1,0 +1,30 @@
+---
+---
+
+@import
+  "minima/skins/{{ site.minima.skin | default: 'classic' }}",
+  "minima/initialize";
+
+/* Add left sidebar image */
+body {
+  background-image: url('/assets/sunPetroWhite.png');
+  background-repeat: no-repeat;
+  background-position: calc(50% - 480px) 20px;
+  background-attachment: fixed;
+  background-size: 100px auto; /* adjust width as needed */
+}
+
+/* Add left margin to main content to prevent overlap */
+.page-content {
+  margin-left: 0px; /* slightly more than image width */
+}
+
+/* Responsive: hide on mobile */
+@media screen and (max-width: 768px) {
+  body {
+    background-image: none;
+  }
+  .page-content {
+    margin-left: 0;
+  }
+}
