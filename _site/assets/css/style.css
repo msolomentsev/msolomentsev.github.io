@@ -1,4 +1,8 @@
 @charset "UTF-8";
+/*$base-font-family: HelveticaNeu;
+$brand-color: orange;*/
+/*$base-font-family: "Janson";*/
+/*$base-font-family: "Kante";*/
 .highlight .err {
   color: #e3d2d2;
   background-color: #8c2121; }
@@ -668,7 +672,13 @@ body {
   background-position: calc(50% - 480px) 20px;
   background-attachment: fixed;
   background-size: 100px auto;
-  /* adjust width as needed */ }
+  /* adjust width as needed */
+  font-size: 1rem;
+  /*color: #959595;*/
+  color: #d9d9d9; }
+
+h1, h2, h3 {
+  color: #d9d9d9; }
 
 /* Add left margin to main content to prevent overlap */
 .page-content {
@@ -682,3 +692,48 @@ body {
 
   .page-content {
     margin-left: 0; } }
+@font-face {
+  font-family: "Kante";
+  src: url("/assets/fonts/Kante-Regular-Trial.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal; }
+@font-face {
+  font-family: "Kante";
+  src: url("/assets/fonts/Kante-Bold-Trial.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal; }
+@font-face {
+  font-family: "Saggi";
+  src: url("/assets/fonts/Saggiv0.2DEMO-Roman.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal; }
+@font-face {
+  font-family: "Saggi";
+  src: url("/assets/fonts/Saggiv0.2DEMO-Italic.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal; }
+@font-face {
+  font-family: "Janson";
+  src: url("/assets/fonts/Janson MT Std Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal; }
+.libre-caslon-text-regular {
+  font-family: "Libre Caslon Text", serif;
+  font-weight: 400;
+  font-style: normal; }
+
+.libre-caslon-text-bold {
+  font-family: "Libre Caslon Text", serif;
+  font-weight: 700;
+  font-style: normal; }
+
+.libre-caslon-text-regular-italic {
+  font-family: "Libre Caslon Text", serif;
+  font-weight: 400;
+  font-style: italic; }
+
+.cormorant-garamond {
+  font-family: "Cormorant Garamond", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal; }
