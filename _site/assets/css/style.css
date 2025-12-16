@@ -3,6 +3,7 @@
 $brand-color: orange;*/
 /*$base-font-family: "Janson";*/
 /*$base-font-family: "Kante";*/
+/*$base-font-family: "STIX Two Text";*/
 .highlight .err {
   color: #e3d2d2;
   background-color: #8c2121; }
@@ -675,10 +676,10 @@ body {
   /* adjust width as needed */
   font-size: 1rem;
   /*color: #959595;*/
-  color: #d9d9d9; }
+  color: #bfbfbf; }
 
 h1, h2, h3 {
-  color: #d9d9d9; }
+  color: #bfbfbf; }
 
 /* Add left margin to main content to prevent overlap */
 .page-content {
@@ -734,6 +735,12 @@ h1, h2, h3 {
 
 .cormorant-garamond {
   font-family: "Cormorant Garamond", serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal; }
+
+.stix-two-text {
+  font-family: "STIX Two Text", serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal; }

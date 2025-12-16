@@ -51,4 +51,6 @@ Once again - these are nice things to aspire for, but difficult to achieve. I su
 
 ### Synthesis
 
-You may have noticed that many of my bulletpoints between conversation and performance rhyme with eachother. 
+You may have noticed that many of my bullet points in conversation and performance rhyme with each other. This is obviously on purpose. I think the two perspectives are complementary, leading to many of the same conclusions. Moreover, I think the most effective presentations occur when you can hold both ideas in your head at once. If you can be conversational while being very mindful of the impression you are making on your audience, that is an incredibly effective presentation.
+
+In the end - there is no substitute for practice. Short of that, take it easy, be cool. Best of luck.
