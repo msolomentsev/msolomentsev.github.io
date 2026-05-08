@@ -1,11 +1,40 @@
-<nav style="margin-bottom: 0.5cm;">
+<nav style="margin-bottom: 0.5cm">
     <!--<img src="/assets/sunPetroWhite.png" alt="Sun Petroglyph" style="width:50px"> -->
-    <a href="/index.html" {% if page.url == "/" %}style="color: #bfbfbf;"{% endif %}>Home</a>
-     | 
-    <a href="/blogIndex" {% if page.url == "/blogIndex.html" %}style="color: #bfbfbf;"{% endif %}>Blog</a>
-     | 
-    <a href="/contact.html" {% if page.url == "/contact.html" %}style="color: #bfbfbf;"{% endif %}>Contact</a>
+    <a
+        href="/index.html"
+        {% if page.url == "/" %}style="color: #bfbfbf;"
+        {%
+        endif
+        %}
+        >Home</a
+    >
+    |
+    <a
+        href="/blogIndex"
+        {% if page.url == "/blogIndex.html" %}style="color: #bfbfbf;"
+        {%
+        endif
+        %}
+        >Blog</a
+    >
+    |
+    <a
+        href="/MSolomentsevCV_2026.pdf"
+        {% if page.url == "/blogIndex.html" %}style="color: #bfbfbf;"
+        {%
+        endif
+        %}
+        >CV</a
+    >
+    |
+    <a
+        href="/contact.html"
+        {% if page.url == "/contact.html" %}style="color: #bfbfbf;"
+        {%
+        endif
+        %}
+        >Contact</a
+    >
 </nav>
 
 {% include analytics.html %}
-
