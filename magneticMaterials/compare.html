@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magnetic Materials</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      padding: 2rem;
+    }
+
+    nav {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    nav a {
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #555;
+      background: #e8e8e8;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    nav a:hover  { background: #ddd; color: #222; }
+    nav a.active { background: #fff; color: #222; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+
+    .freq-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .freq-row label {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .freq-row input {
+      width: 160px;
+      padding: 0.4rem 0.6rem;
+      font-size: 1rem;
+      border: 1.5px solid #aaa;
+      border-radius: 4px;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .freq-row input:focus { border-color: #3a7bd5; }
+
+    .freq-row .unit { color: #666; font-size: 0.95rem; }
+
+    .hint { font-size: 0.8rem; color: #888; margin-left: auto; }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-row label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #555;
+    }
+
+    .filter-row select {
+      padding: 0.4rem 0.6rem;
+      font-size: 0.95rem;
+      border: 1.5px solid #aaa;
+      border-radius: 4px;
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .filter-row select:focus { border-color: #3a7bd5; }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-card, .core-loss-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.25rem 1.25rem 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .chart-card h2, .core-loss-card h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 0.75rem;
+    }
+
+    .chart-card canvas { display: block; width: 100% !important; }
+
+    .info-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border-left: 4px solid #c0392b;
+      margin-bottom: 2rem;
+    }
+
+    .info-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #c0392b;
+    }
+
+    .info-datasheet {
+      margin-left: auto;
+      font-size: 0.85rem;
+      color: #3a7bd5;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .info-datasheet:hover { text-decoration: underline; }
+
+    .info-props {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .info-prop {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .info-prop-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #999;
+    }
+
+    .info-prop-value {
+      font-size: 0.95rem;
+      color: #222;
+    }
+
+    .info-notes {
+      margin-top: 0.85rem;
+      font-size: 0.875rem;
+      color: #666;
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .info-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .info-tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #c0392b;
+      background: #fbeae8;
+      border: 1px solid #e8c5c0;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .error-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      padding: 1.5rem;
+      max-width: 640px;
+      line-height: 1.6;
+    }
+
+    .error-box code {
+      display: block;
+      margin-top: 0.75rem;
+      background: #eee;
+      padding: 0.4rem 0.7rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="compare.html" class="active">Compare</a>
+  <a href="material.html">Detail</a>
+</nav>
+
+<div id="app">
+
+  <h1>Magnetic Materials Comparison</h1>
+
+  <div class="freq-row">
+    <label>Freq</label>
+    <input type="number" id="freq" value="100" min="1" max="5000" step="1">
+    <span class="unit">kHz</span>
+    <span class="hint">Click a bar or curve to select a material</span>
+  </div>
+
+  <div class="filter-row">
+    <label>Type</label>
+    <select id="filterType"><option value="All">All</option></select>
+    <label>Manufacturer</label>
+    <select id="filterManufacturer"><option value="All">All</option></select>
+  </div>
+
+  <div id="infoCard" class="info-card" hidden>
+    <div class="info-header">
+      <span class="info-name" id="infoName"></span>
+      <a id="infoDatasheet" class="info-datasheet" target="_blank" rel="noopener noreferrer">Datasheet ↗</a>
+    </div>
+    <div class="info-props" id="infoProps"></div>
+    <div class="info-tags" id="infoTags"></div>
+    <p class="info-notes" id="infoNotes"></p>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h2>&#956; &mdash; Permeability</h2>
+      <canvas id="muChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+      <h2>B<sub>SAT</sub> &mdash; Saturation flux density (mT)</h2>
+      <canvas id="bsatChart" height="220"></canvas>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="core-loss-card">
+      <h2>Core Loss @ 25 &deg;C &mdash; P<sub>v</sub> (kW/m&sup3;) vs B (mT) &nbsp;&bull;&nbsp; log&#8211;log</h2>
+      <canvas id="coreLossChart25" height="320"></canvas>
+    </div>
+    <div class="core-loss-card">
+      <h2>Core Loss @ 100 &deg;C &mdash; P<sub>v</sub> (kW/m&sup3;) vs B (mT) &nbsp;&bull;&nbsp; log&#8211;log</h2>
+      <canvas id="coreLossChart100" height="320"></canvas>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<script>
+// ── Constants ─────────────────────────────────────────────────────────────────
+const B_POINTS = [10, 15, 20, 30, 50, 75, 100, 150, 200, 300]; // mT
+
+const PALETTE   = ['#4e79a7', '#f28e2b', '#59a14f', '#76b7b2', '#b07aa1', '#edc948', '#9c755f'];
+const HIGHLIGHT = '#c0392b';
+const DIM       = 'rgba(180,180,180,0.30)';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let materials        = [];    // parsed from CSV
+let selectedName     = null;  // material name (survives freq changes that remove/add materials)
+let filterType       = 'All';
+let filterMfr        = 'All';
+let muChart, bsatChart, coreLossChart25, coreLossChart100;
+
+// ── CSV parsing ───────────────────────────────────────────────────────────────
+async function loadCSV() {
+  const resp = await fetch('data.csv');
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  return resp.text();
+}
+
+// Handles quoted fields so "Magnetics, Inc." parses as one value
+function splitCSVLine(line) {
+  const out = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQ = !inQ; }
+    else if (ch === ',' && !inQ) { out.push(cur.trim()); cur = ''; }
+    else { cur += ch; }
+  }
+  out.push(cur.trim());
+  return out;
+}
+
+function parseCSV(text) {
+  const lines = text
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#'));
+
+  const headers = splitCSVLine(lines[0]);
+  const rows = lines.slice(1).map(line => {
+    const vals = splitCSVLine(line);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] || ''; });
+    return obj;
+  });
+
+  // Group rows by material name, accumulating Steinmetz ranges
+  const map = new Map();
+  for (const row of rows) {
+    const name = row.material;
+    if (!name) continue;  // skip placeholder rows with no material name
+    if (!map.has(name)) {
+      map.set(name, {
+        name,
+        mu:           parseFloat(row.mu),
+        bsat_mT:      parseFloat(row.bsat_mT),
+        type:         row.type         || '',
+        manufacturer: row.manufacturer || '',
+        notes:        row.notes        || '',
+        datasheet:    row.datasheet    || '',
+        tags:         row.Tags         || '',
+        ranges:       [],
+      });
+    }
+    map.get(name).ranges.push({
+      freq_min:  parseFloat(row.freq_min_kHz),
+      freq_max:  parseFloat(row.freq_max_kHz),
+      k25:       parseFloat(row['k-25']),
+      alpha25:   parseFloat(row['alpha-25']),
+      beta25:    parseFloat(row['beta-25']),
+      k100:      parseFloat(row['k-100']),
+      alpha100:  parseFloat(row['alpha-100']),
+      beta100:   parseFloat(row['beta-100']),
+    });
+  }
+
+  // Ensure ranges are sorted by freq_min
+  for (const mat of map.values()) {
+    mat.ranges.sort((a, b) => a.freq_min - b.freq_min);
+  }
+
+  return [...map.values()];
+}
+
+// Returns the matching Steinmetz range for a frequency, or null if out of range
+function getSteinmetz(material, freqKHz) {
+  for (const r of material.ranges) {
+    if (freqKHz >= r.freq_min && freqKHz <= r.freq_max) return r;
+  }
+  return null;
+}
+
+// ── Colour helpers ────────────────────────────────────────────────────────────
+// Global palette index is keyed to the full materials array so colours are
+// stable as materials appear/disappear with frequency changes.
+function paletteColor(mat) {
+  return PALETTE[materials.indexOf(mat) % PALETTE.length];
+}
+
+function barColors(activeMats) {
+  return activeMats.map(mat =>
+    mat.name === selectedName ? HIGHLIGHT : paletteColor(mat)
+  );
+}
+
+// ── Core loss datasets (active materials only) ────────────────────────────────
+function coreLossDatasets(activeMats, freqKHz, temp) {
+  return activeMats
+    .filter(mat => {
+      const r = getSteinmetz(mat, freqKHz);
+      const k = r ? (temp === 25 ? r.k25 : r.k100) : NaN;
+      return r && k > 0 && !isNaN(k);
+    })
+    .map(mat => {
+      const r          = getSteinmetz(mat, freqKHz);
+      const k          = temp === 25 ? r.k25    : r.k100;
+      const alpha      = temp === 25 ? r.alpha25 : r.alpha100;
+      const beta       = temp === 25 ? r.beta25  : r.beta100;
+      const isSelected = mat.name === selectedName;
+      return {
+        label:           mat.name,
+        data:            B_POINTS.map(B => ({
+          x: B,
+          y: k * Math.pow(freqKHz, alpha) * Math.pow(B, beta),
+        })),
+        parsing:         false,
+        borderColor:     isSelected ? HIGHLIGHT : (selectedName ? DIM : paletteColor(mat)),
+        backgroundColor: 'transparent',
+        borderWidth:     isSelected ? 2.5 : 1.5,
+        pointRadius:     isSelected ? 3 : (selectedName ? 0 : 2),
+        tension:         0,
+        order:           isSelected ? 0 : 1,
+      };
+    });
+}
+
+// ── UI updates ────────────────────────────────────────────────────────────────
+function currentFreq() {
+  return Math.max(1, parseFloat(document.getElementById('freq').value) || 100);
+}
+
+function activeMaterials(freqKHz) {
+  return materials.filter(mat => {
+    if (getSteinmetz(mat, freqKHz) === null) return false;
+    if (filterType !== 'All' && mat.type !== filterType) return false;
+    if (filterMfr  !== 'All' && mat.manufacturer !== filterMfr) return false;
+    return true;
+  });
+}
+
+function populateFilters() {
+  const types = ['All', ...[...new Set(materials.map(m => m.type).filter(Boolean))].sort()];
+  const mfrs  = ['All', ...[...new Set(materials.map(m => m.manufacturer).filter(Boolean))].sort()];
+
+  const typeEl = document.getElementById('filterType');
+  const mfrEl  = document.getElementById('filterManufacturer');
+  typeEl.innerHTML = types.map(t => `<option value="${t}">${t}</option>`).join('');
+  mfrEl.innerHTML  = mfrs.map(m => `<option value="${m}">${m}</option>`).join('');
+
+  typeEl.addEventListener('change', e => { filterType = e.target.value; updateCharts(); });
+  mfrEl.addEventListener('change',  e => { filterMfr  = e.target.value; updateCharts(); });
+}
+
+function updateCharts() {
+  const freq       = currentFreq();
+  const activeMats = activeMaterials(freq);
+
+  // If the selected material has dropped out of range, deselect it
+  if (selectedName && !activeMats.find(m => m.name === selectedName)) {
+    selectedName = null;
+  }
+
+  const colors = barColors(activeMats);
+
+  muChart.data.labels                        = activeMats.map(m => m.name);
+  muChart.data.datasets[0].data             = activeMats.map(m => m.mu);
+  muChart.data.datasets[0].backgroundColor  = colors;
+
+  bsatChart.data.labels                       = activeMats.map(m => m.name);
+  bsatChart.data.datasets[0].data            = activeMats.map(m => m.bsat_mT);
+  bsatChart.data.datasets[0].backgroundColor = [...colors];
+
+  muChart.update('none');
+  bsatChart.update('none');
+
+  coreLossChart25.data.datasets  = coreLossDatasets(activeMats, freq, 25);
+  coreLossChart25.update('none');
+  coreLossChart100.data.datasets = coreLossDatasets(activeMats, freq, 100);
+  coreLossChart100.update('none');
+
+  updateInfoCard(activeMats);
+}
+
+function updateInfoCard(activeMats) {
+  const card = document.getElementById('infoCard');
+  const mat  = activeMats.find(m => m.name === selectedName);
+  if (!mat) { card.hidden = true; return; }
+
+  document.getElementById('infoName').textContent = mat.name;
+
+  const dsEl = document.getElementById('infoDatasheet');
+  if (mat.datasheet) {
+    dsEl.href   = mat.datasheet;
+    dsEl.hidden = false;
+  } else {
+    dsEl.hidden = true;
+  }
+
+  const props = [
+    { label: 'μ (permeability)',  value: isNaN(mat.mu)      ? '—' : mat.mu.toLocaleString() },
+    { label: 'B<sub>sat</sub>',   value: isNaN(mat.bsat_mT) ? '—' : `${mat.bsat_mT} mT` },
+    { label: 'Type',              value: mat.type         || '—' },
+    { label: 'Manufacturer',      value: mat.manufacturer || '—' },
+  ];
+  document.getElementById('infoProps').innerHTML = props.map(p =>
+    `<div class="info-prop">
+      <span class="info-prop-label">${p.label}</span>
+      <span class="info-prop-value">${p.value}</span>
+    </div>`
+  ).join('');
+
+  const tagsEl = document.getElementById('infoTags');
+  const tags   = mat.tags.split(',').map(t => t.trim()).filter(Boolean);
+  tagsEl.innerHTML = tags.map(t => `<span class="info-tag">${t}</span>`).join('');
+  tagsEl.hidden    = tags.length === 0;
+
+  const notesEl = document.getElementById('infoNotes');
+  notesEl.textContent = mat.notes;
+  notesEl.hidden = !mat.notes;
+
+  card.hidden = false;
+}
+
+function selectMaterial(name) {
+  selectedName = selectedName === name ? null : name;
+  updateCharts();
+}
+
+// ── Chart construction ────────────────────────────────────────────────────────
+function makeBarChart(canvasId, valueKey, yLabel) {
+  const freq       = currentFreq();
+  const activeMats = activeMaterials(freq);
+  const ctx        = document.getElementById(canvasId).getContext('2d');
+  return new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: activeMats.map(m => m.name),
+      datasets: [{
+        data:            activeMats.map(m => m[valueKey]),
+        backgroundColor: barColors(activeMats),
+        borderRadius:    3,
+        borderSkipped:   false,
+      }],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `${ctx.formattedValue}${yLabel ? ' ' + yLabel : ''}` } },
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          beginAtZero: true,
+          title: { display: !!yLabel, text: yLabel, color: '#888', font: { size: 11 } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+        },
+      },
+      onClick(evt, elements) {
+        if (!elements.length) return;
+        // Look up name from the chart's current labels (not the full materials array)
+        const name = this.data.labels[elements[0].index];
+        selectMaterial(name);
+      },
+      onHover(evt, elements) { evt.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+    },
+  });
+}
+
+function makeCoreLossChart(canvasId, temp) {
+  const freq       = currentFreq();
+  const activeMats = activeMaterials(freq);
+  const ctx        = document.getElementById(canvasId).getContext('2d');
+  return new Chart(ctx, {
+    type: 'line',
+    data: { datasets: coreLossDatasets(activeMats, freq, temp) },
+    options: {
+      responsive: true,
+      interaction: { mode: 'nearest', axis: 'x', intersect: false },
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 14, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toExponential(2)} kW/m³`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          type: 'logarithmic',
+          title: { display: true, text: 'B (mT)', color: '#888', font: { size: 12 } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { callback: v => [10, 20, 50, 100, 200, 300].includes(Number(v)) ? v : '' },
+        },
+        y: {
+          type: 'logarithmic',
+          min: 1,
+          max: 10000,
+          title: { display: true, text: 'Pv (kW/m³)', color: '#888', font: { size: 12 } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: {
+            callback: v => {
+              const exp = Math.log10(v);
+              return Math.abs(exp - Math.round(exp)) < 1e-9 ? v : '';
+            },
+          },
+        },
+      },
+      onClick(evt, elements) {
+        if (!elements.length) return;
+        const name = this.data.datasets[elements[0].datasetIndex].label;
+        selectMaterial(name);
+      },
+      onHover(evt, elements) { evt.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+    },
+  });
+}
+
+function buildCharts() {
+  muChart          = makeBarChart('muChart',          'mu',      '');
+  bsatChart        = makeBarChart('bsatChart',        'bsat_mT', 'mT');
+  coreLossChart25  = makeCoreLossChart('coreLossChart25',  25);
+  coreLossChart100 = makeCoreLossChart('coreLossChart100', 100);
+
+  document.getElementById('freq').addEventListener('input', updateCharts);
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+function showError(html) {
+  document.getElementById('app').innerHTML =
+    `<div class="error-box"><strong>Setup required</strong><br><br>${html}</div>`;
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  if (location.protocol === 'file:') {
+    showError(`
+      This page loads <code>data.csv</code> and cannot run directly from the filesystem
+      (browsers block local file fetches for security reasons).<br><br>
+      Start a local server from this folder, then open
+      <a href="http://localhost:8080">http://localhost:8080</a>:
+      <code>python3 -m http.server 8080</code>
+    `);
+    return;
+  }
+
+  try {
+    const text = await loadCSV();
+    materials  = parseCSV(text);
+    populateFilters();
+    buildCharts();
+  } catch (e) {
+    showError(`Could not load <code>data.csv</code>: ${e.message}`);
+  }
+});
+</script>
+</body>
+</html>
