@@ -4,10 +4,15 @@ layout: base
 
 {% include navigation.html %}
 
+<ii>
+  <a href="https://open.substack.com/pub/msolom/p/every-man-a-vc">Every man a VC: On public deep-tech startups</a>
+  <em>July 10, 2026</em>
+  <br>
+</li>
 {% for post in site.posts %}
   {% unless post.unlisted %}
   <ii>
-    <a href="{{ post.url }}">{{ post.title }}</a> 
+    <a href="{{ post.url }}">{{ post.title }}</a>
     <em>{{ post.date | date: '%B %-d, %Y' }}</em>
     <br>
   </li>
@@ -15,9 +20,13 @@ layout: base
 {% endfor %}
 <br>
 
-Subscribe via <a href="{{ site.feed.path | default: 'feed.xml' | absolute_url }}">RSS</a>, or by email:
+<iframe src="https://msolom.substack.com/embed?transparent=1&light=1" width="480" height="320" style="border: 0; background: transparent" frameborder="0" scrolling="no"></iframe>
+
+
+<!--Subscribe via <a href="{{ site.feed.path | default: 'feed.xml' | absolute_url }}">RSS</a>, or by email:
 <br>
 <script async src="https://eocampaign1.com/form/94ed4cce-daa9-11f0-ae68-5fea9ea24cec.js" data-form="94ed4cce-daa9-11f0-ae68-5fea9ea24cec"></script>
+-->
 
 <!--
 <a href="{{ site.feed.path | default: 'feed.xml' | absolute_url }}" target="_blank" title="Subscribe to syndication feed">
