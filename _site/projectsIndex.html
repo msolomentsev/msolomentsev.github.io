@@ -8,14 +8,16 @@
 <meta property="og:title" content="Michael Solomentsev" />
 <meta name="author" content="Michael Solomentsev" />
 <meta property="og:locale" content="en_US" />
-<link rel="canonical" href="http://localhost:4000/blogIndex.html" />
-<meta property="og:url" content="http://localhost:4000/blogIndex.html" />
+<meta name="description" content="Projects Michael Solomentsev has worked on." />
+<meta property="og:description" content="Projects Michael Solomentsev has worked on." />
+<link rel="canonical" href="http://localhost:4000/projectsIndex.html" />
+<meta property="og:url" content="http://localhost:4000/projectsIndex.html" />
 <meta property="og:site_name" content="Michael Solomentsev" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Michael Solomentsev" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Michael Solomentsev"},"headline":"Michael Solomentsev","url":"http://localhost:4000/blogIndex.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","author":{"@type":"Person","name":"Michael Solomentsev"},"description":"Projects Michael Solomentsev has worked on.","headline":"Michael Solomentsev","url":"http://localhost:4000/projectsIndex.html"}</script>
 <!-- End Jekyll SEO tag -->
 <link id="main-stylesheet" rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Michael Solomentsev" /><link rel="icon" type="image/svg+xml" href="assets/favicons/favicon.svg" />
 <link rel="shortcut icon" href="assets/favicons/favicon.ico" />
@@ -49,20 +51,19 @@
     |
     <a
         href="/blogIndex"
-        style="color: #bfbfbf;"
         
         >Blog</a
     >
     |
     <a
         href="/projectsIndex"
+        style="color: #bfbfbf;"
         
         >Projects</a
     >
     |
     <a
         href="/MSolomentsevCV_2026.pdf"
-        style="color: #bfbfbf;"
         
         >CV</a
     >
@@ -79,43 +80,95 @@
         async src="//gc.zgo.at/count.js"></script>
 
 
-<ii>
-  <a href="https://open.substack.com/pub/msolom/p/every-man-a-vc">Every man a VC: On public deep-tech startups</a>
-  <em>July 10, 2026</em>
-  <br>
-</li>
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
 
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    color: #bfbfbf;
+    text-decoration: none;
+  }
+
+  .project-card img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+  }
+
+  .project-title {
+    font-weight: 700;
+    margin: 0.6rem 0 0.3rem 0;
+  }
+
+  .project-description {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  a.project-card:hover .project-title {
+    text-decoration: underline;
+  }
+
+  /* Two columns on tablets, one on phones */
+  @media screen and (max-width: 800px) {
+    .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media screen and (max-width: 500px) {
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="projects-grid">
   
-
+    
+      <a class="project-card" href="https://www.palanquinpower.com">
+    
+        
+          <img src="/assets/images/palanquintransparant1.png" alt="Palanquin Power">
+        
+        <p class="project-title">Palanquin Power</p>
+        <p class="project-description">Startup. Ultra-efficient data center power supplies, using differential power processing.
+</p>
+    
+      </a>
+    
   
-  <ii>
-    <a href="/2025/12/19/palanquin.html">What does my startup, Palanquin Power, do?</a>
-    <em>December 19, 2025</em>
-    <br>
-  </li>
+    
+      <a class="project-card" href="/magneticMaterials/compare.html">
+    
+        
+          <img src="/assets/images/material.png" alt="Magnetic Materials Comparison Tool (IN PROGRESS)">
+        
+        <p class="project-title">Magnetic Materials Comparison Tool (IN PROGRESS)</p>
+        <p class="project-description">An interactive tool for selection of high frequency magnetic materials.
+</p>
+    
+      </a>
+    
   
-
-<br>
-
-<iframe src="https://msolom.substack.com/embed?transparent=1&light=1" width="480" height="320" style="border: 0; background: transparent" frameborder="0" scrolling="no"></iframe>
-
-
-<!--Subscribe via <a href="http://localhost:4000/feed.xml">RSS</a>, or by email:
-<br>
-<script async src="https://eocampaign1.com/form/94ed4cce-daa9-11f0-ae68-5fea9ea24cec.js" data-form="94ed4cce-daa9-11f0-ae68-5fea9ea24cec"></script>
--->
-
-<!--
-<a href="http://localhost:4000/feed.xml" target="_blank" title="Subscribe to syndication feed">
-  <svg class="svg-icon grey" viewbox="0 0 16 16" style="margin-top: 0cm;">
-    <path d="M12.8 16C12.8 8.978 7.022 3.2 0 3.2V0c8.777 0 16 7.223 16 16h-3.2zM2.194
-      11.61c1.21 0 2.195.985 2.195 2.196 0 1.21-.99 2.194-2.2 2.194C.98 16 0 15.017 0
-      13.806c0-1.21.983-2.195 2.194-2.195zM10.606
-      16h-3.11c0-4.113-3.383-7.497-7.496-7.497v-3.11c5.818 0 10.606 4.79 10.606 10.607z"
-    />
-  </svg>
-</a>
--->
+    
+      <a class="project-card" href="https://github.com/msolomentsev/rectangulator">
+    
+        
+          <img src="/assets/images/rectangulatorExample.png" alt="Rectangulator">
+        
+        <p class="project-title">Rectangulator</p>
+        <p class="project-description">KiCad plug-in that makes zones into perfect rectangles.
+</p>
+    
+      </a>
+    
+  
+</div>
 
       </div>
     </main><link id="fa-stylesheet" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.0.0/css/all.min.css">

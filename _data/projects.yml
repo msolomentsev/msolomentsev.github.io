@@ -1,0 +1,26 @@
+# Projects shown on /projectsIndex as a 3-per-row grid.
+# To add a project, copy one block below and fill in the fields.
+#   title:       shown in bold
+#   image:       path under /assets/images/ (or any URL)
+#   description: a short blurb
+#   url:         (optional) makes the whole card a link
+#
+# Order here = order on the page.
+
+- title: Palanquin Power
+  image: /assets/images/palanquintransparant1.png
+  description: >
+    Startup. Ultra-efficient data center power supplies, using differential power processing.
+  url: https://www.palanquinpower.com
+
+- title: Magnetic Materials Comparison Tool (IN PROGRESS)
+  image: /assets/images/material.png
+  description: >
+    An interactive tool for selection of high frequency magnetic materials.
+  url: /magneticMaterials/compare.html
+
+- title: Rectangulator
+  image: /assets/images/rectangulatorExample.png
+  description: >
+    KiCad plug-in that makes zones into perfect rectangles.
+  url: https://github.com/msolomentsev/rectangulator

@@ -1,0 +1,73 @@
+---
+layout: base
+description: Projects Michael Solomentsev has worked on.
+---
+
+{% include navigation.html %}
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    color: #bfbfbf;
+    text-decoration: none;
+  }
+
+  .project-card img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+  }
+
+  .project-title {
+    font-weight: 700;
+    margin: 0.6rem 0 0.3rem 0;
+  }
+
+  .project-description {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  a.project-card:hover .project-title {
+    text-decoration: underline;
+  }
+
+  /* Two columns on tablets, one on phones */
+  @media screen and (max-width: 800px) {
+    .projects-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media screen and (max-width: 500px) {
+    .projects-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="projects-grid">
+  {% for project in site.data.projects %}
+    {% if project.url %}
+      <a class="project-card" href="{{ project.url }}">
+    {% else %}
+      <div class="project-card">
+    {% endif %}
+        {% if project.image %}
+          <img src="{{ project.image }}" alt="{{ project.title }}">
+        {% endif %}
+        <p class="project-title">{{ project.title }}</p>
+        <p class="project-description">{{ project.description }}</p>
+    {% if project.url %}
+      </a>
+    {% else %}
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

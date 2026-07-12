@@ -1,5 +1,7 @@
 title: Michael Solomentsev
-#description: Website & Blog
+# No site-level `description`: on the home page jekyll-seo-tag appends it to the <title>
+# (e.g. "Michael Solomentsev | ..."). Set a page-level `description` in each page's
+# front matter instead — that feeds <meta name="description"> without touching the title.
 show_downloads: false
 blogurl:
 
