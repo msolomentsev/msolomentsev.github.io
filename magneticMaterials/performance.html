@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Magnetic Materials</title>
+  <title>Performance Factor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -42,23 +42,31 @@
       font-size: 1.1rem;
       font-weight: 600;
       color: #555;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.6rem;
     }
 
-    .freq-row {
+    .page-note {
+      font-size: 0.85rem;
+      color: #777;
+      line-height: 1.55;
+      max-width: 62rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .target-row {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.25rem;
     }
 
-    .freq-row label {
+    .target-row label {
       font-size: 1rem;
       font-weight: 700;
     }
 
-    .freq-row input {
-      width: 160px;
+    .target-row input {
+      width: 110px;
       padding: 0.4rem 0.6rem;
       font-size: 1rem;
       border: 1.5px solid #aaa;
@@ -68,11 +76,30 @@
       transition: border-color 0.15s;
     }
 
-    .freq-row input:focus { border-color: #3a7bd5; }
+    .target-row input:focus { border-color: #3a7bd5; }
 
-    .freq-row .unit { color: #666; font-size: 0.95rem; }
+    .target-row .unit { color: #666; font-size: 0.95rem; }
 
-    .hint { font-size: 0.8rem; color: #888; margin-left: auto; }
+    .target-row .preset {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #555;
+      background: #e8e8e8;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .target-row .preset:hover   { background: #ddd; color: #222; }
+    .target-row .preset.active  { background: #3a7bd5; color: #fff; }
+
+    .target-row .presets-label {
+      font-size: 0.8rem;
+      color: #999;
+      margin-left: 0.75rem;
+    }
 
     .filter-row {
       display: flex;
@@ -101,6 +128,8 @@
 
     .filter-row select:focus { border-color: #3a7bd5; }
 
+    .filter-row .hint { font-size: 0.8rem; color: #888; margin-left: auto; }
+
     .charts-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -108,21 +137,21 @@
       margin-bottom: 1.5rem;
     }
 
-    .chart-card, .core-loss-card {
+    .pf-card {
       background: #fff;
       border-radius: 8px;
       padding: 1.25rem 1.25rem 1rem;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
 
-    .chart-card h2, .core-loss-card h2 {
+    .pf-card h2 {
       font-size: 0.85rem;
       font-weight: 600;
       color: #666;
       margin-bottom: 0.75rem;
     }
 
-    .chart-card canvas { display: block; width: 100% !important; }
+    .pf-card canvas { display: block; width: 100% !important; }
 
     .info-card {
       background: #fff;
@@ -231,20 +260,30 @@
 <body>
 
 <nav>
-  <a href="compare.html" class="active">Compare</a>
+  <a href="compare.html">Compare</a>
   <a href="material.html">Detail</a>
-  <a href="performance.html">Performance Factor</a>
+  <a href="performance.html" class="active">Performance Factor</a>
 </nav>
 
 <div id="app">
 
-  <h1>Magnetic Materials Comparison</h1>
+  <h1>Performance Factor Comparison</h1>
 
-  <div class="freq-row">
-    <label>Freq</label>
-    <input type="number" id="freq" value="100" min="1" max="5000" step="1">
-    <span class="unit">kHz</span>
-    <span class="hint">Click a bar or curve to select a material</span>
+  <p class="page-note">
+    PF = f &middot; B<sub>pk</sub>, where B<sub>pk</sub> is the flux density that produces the loss target set below at that frequency &mdash; higher is better. Each curve is drawn only across the material's own fitted Steinmetz range; breaks in a line mark piecewise segment boundaries, where the coefficients change and PF jumps. B<sub>pk</sub> is not clamped to B<sub>SAT</sub>.
+  </p>
+  <p class="page-note">
+      Note that these are all back-calculated from Steinmetz parameters, which may not have an accurate fit especially at the ends of their frequency ranges. Treat these figures as ballpark estimates, not gospel!
+  </p>
+
+  <div class="target-row">
+    <label for="pvTarget">Loss target</label>
+    <input type="number" id="pvTarget" value="500" min="1" max="1000" step="1">
+    <span class="unit">mW/cm&sup3; &nbsp;(&equiv;&nbsp;kW/m&sup3;)</span>
+    <span class="presets-label">Common</span>
+    <button type="button" class="preset" data-pv="100">100</button>
+    <button type="button" class="preset" data-pv="250">250</button>
+    <button type="button" class="preset" data-pv="500">500</button>
   </div>
 
   <div class="filter-row">
@@ -252,12 +291,13 @@
     <select id="filterType"><option value="All">All</option></select>
     <label>Manufacturer</label>
     <select id="filterManufacturer"><option value="All">All</option></select>
+    <span class="hint">Click a curve to select a material</span>
   </div>
 
   <div id="infoCard" class="info-card" hidden>
     <div class="info-header">
       <span class="info-name" id="infoName"></span>
-      <a id="infoDatasheet" class="info-datasheet" target="_blank" rel="noopener noreferrer">Datasheet ↗</a>
+      <a id="infoDatasheet" class="info-datasheet" target="_blank" rel="noopener noreferrer">Datasheet &#8599;</a>
     </div>
     <div class="info-props" id="infoProps"></div>
     <div class="info-tags" id="infoTags"></div>
@@ -265,24 +305,13 @@
   </div>
 
   <div class="charts-grid">
-    <div class="chart-card">
-      <h2>&#956; &mdash; Permeability</h2>
-      <canvas id="muChart" height="220"></canvas>
+    <div class="pf-card">
+      <h2>Performance Factor @ 25 &deg;C &mdash; f &middot; B<sub>pk</sub> (Hz&middot;T) vs f (kHz)</h2>
+      <canvas id="pfChart25" height="430"></canvas>
     </div>
-    <div class="chart-card">
-      <h2>B<sub>SAT</sub> &mdash; Saturation flux density (mT)</h2>
-      <canvas id="bsatChart" height="220"></canvas>
-    </div>
-  </div>
-
-  <div class="charts-grid">
-    <div class="core-loss-card">
-      <h2>Core Loss @ 25 &deg;C &mdash; P<sub>v</sub> (kW/m&sup3;) vs B (mT) &nbsp;&bull;&nbsp; log&#8211;log</h2>
-      <canvas id="coreLossChart25" height="320"></canvas>
-    </div>
-    <div class="core-loss-card">
-      <h2>Core Loss @ 100 &deg;C &mdash; P<sub>v</sub> (kW/m&sup3;) vs B (mT) &nbsp;&bull;&nbsp; log&#8211;log</h2>
-      <canvas id="coreLossChart100" height="320"></canvas>
+    <div class="pf-card">
+      <h2>Performance Factor @ 100 &deg;C &mdash; f &middot; B<sub>pk</sub> (Hz&middot;T) vs f (kHz)</h2>
+      <canvas id="pfChart100" height="430"></canvas>
     </div>
   </div>
 
@@ -290,7 +319,10 @@
 
 <script>
 // ── Constants ─────────────────────────────────────────────────────────────────
-const B_POINTS = [10, 15, 20, 30, 50, 75, 100, 150, 200, 300]; // mT
+const PV_DEFAULT  = 500;   // kW/m³ — equals the conventional 500 mW/cm³ PF loss target
+const F_MIN_KHZ   = 100;
+const F_MAX_KHZ   = 10000;
+const PTS_PER_DEC = 60;    // sample density along the log-frequency axis
 
 const PALETTE   = ['#4e79a7', '#f28e2b', '#59a14f', '#76b7b2', '#b07aa1', '#edc948', '#9c755f'];
 const HIGHLIGHT = '#c0392b';
@@ -350,11 +382,12 @@ Chart.Interaction.modes.nearestCurve = function (chart, e, options, useFinalPosi
 };
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let materials        = [];    // parsed from CSV
-let selectedName     = null;  // material name (survives freq changes that remove/add materials)
-let filterType       = 'All';
-let filterMfr        = 'All';
-let muChart, bsatChart, coreLossChart25, coreLossChart100;
+let materials    = [];    // parsed from CSV
+let selectedName = null;  // material name, so selection survives filter changes
+let filterType   = 'All';
+let filterMfr    = 'All';
+let pvTarget     = PV_DEFAULT;  // kW/m³, read from the Loss target input
+let pfChart25, pfChart100;
 
 // ── CSV parsing ───────────────────────────────────────────────────────────────
 async function loadCSV() {
@@ -421,7 +454,7 @@ function parseCSV(text) {
     });
   }
 
-  // Ensure ranges are sorted by freq_min
+  // Ensure ranges are sorted by freq_min so piecewise segments plot left to right
   for (const mat of map.values()) {
     mat.ranges.sort((a, b) => a.freq_min - b.freq_min);
   }
@@ -429,17 +462,76 @@ function parseCSV(text) {
   return [...map.values()];
 }
 
-// Returns the matching Steinmetz range for a frequency, or null if out of range
-function getSteinmetz(material, freqKHz) {
-  for (const r of material.ranges) {
-    if (freqKHz >= r.freq_min && freqKHz <= r.freq_max) return r;
+// ── Performance factor ────────────────────────────────────────────────────────
+// Steinmetz inverts analytically in B, so no solver is needed:
+//   k·f^α·B̂^β = pvTarget   →   B̂ = (pvTarget / (k·f^α))^(1/β)
+// f in kHz times B̂ in mT multiplies out to Hz·T, the conventional PF unit.
+function bHat(c, fKHz) {
+  return Math.pow(pvTarget / (c.k * Math.pow(fKHz, c.alpha)), 1 / c.beta);
+}
+
+// Steinmetz coefficients for one range at one temperature.
+// Returns null when the CSV cells are blank, zero, or otherwise unusable.
+function coeffs(range, temp) {
+  const k     = temp === 25 ? range.k25     : range.k100;
+  const alpha = temp === 25 ? range.alpha25 : range.alpha100;
+  const beta  = temp === 25 ? range.beta25  : range.beta100;
+  if (!(k > 0) || !isFinite(alpha) || !(beta > 0)) return null;
+  return { k, alpha, beta };
+}
+
+// The part of a Steinmetz range that falls inside the plotted window, or null.
+// Curves are never extrapolated past a material's own fitted range.
+function clampRange(range) {
+  const lo = Math.max(range.freq_min, F_MIN_KHZ);
+  const hi = Math.min(range.freq_max, F_MAX_KHZ);
+  return (isFinite(lo) && isFinite(hi) && hi > lo) ? { lo, hi } : null;
+}
+
+// Log-spaced sample points across [lo, hi], both endpoints included
+function logSpan(lo, hi) {
+  const a = Math.log10(lo), b = Math.log10(hi);
+  const n = Math.max(2, Math.round((b - a) * PTS_PER_DEC));
+  const out = [];
+  for (let i = 0; i <= n; i++) out.push(Math.pow(10, a + (b - a) * i / n));
+  return out;
+}
+
+function currentTarget() {
+  return Math.max(1, parseFloat(document.getElementById('pvTarget').value) || PV_DEFAULT);
+}
+
+// Shown on the y axis so a screenshot carries its own reference loss level
+function yAxisTitle() {
+  return `PF = f · B̂  (Hz·T)  @ ${pvTarget.toLocaleString()} mW/cm³`;
+}
+
+function hasPF(mat, temp) {
+  return mat.ranges.some(r => clampRange(r) && coeffs(r, temp));
+}
+
+// One point array per material. A {y: null} entry is inserted between segments so
+// Chart.js breaks the line there, leaving the piecewise discontinuity visible
+// rather than drawing a misleading vertical jump across it.
+function pfSeries(mat, temp) {
+  const pts = [];
+  for (const r of mat.ranges) {
+    const span = clampRange(r);
+    if (!span) continue;
+    const c = coeffs(r, temp);
+    if (!c) continue;
+    if (pts.length) pts.push({ x: span.lo, y: null });
+    for (const f of logSpan(span.lo, span.hi)) {
+      const B = bHat(c, f);
+      pts.push({ x: f, y: f * B, b: B });   // b rides along for the tooltip
+    }
   }
-  return null;
+  return pts;
 }
 
 // ── Colour helpers ────────────────────────────────────────────────────────────
-// Global palette index is keyed to the full materials array so colours are
-// stable as materials appear/disappear with frequency changes.
+// Palette index is keyed to the full materials array so colours stay stable as
+// filters add and remove materials.
 function paletteColor(mat) {
   return PALETTE[materials.indexOf(mat) % PALETTE.length];
 }
@@ -456,37 +548,23 @@ function legendLabels(chart) {
   return items;
 }
 
-function barColors(activeMats) {
-  return activeMats.map(mat =>
-    mat.name === selectedName ? HIGHLIGHT : paletteColor(mat)
-  );
-}
-
-// ── Core loss datasets (active materials only) ────────────────────────────────
-function coreLossDatasets(activeMats, freqKHz, temp) {
+function pfDatasets(activeMats, temp) {
   return activeMats
-    .filter(mat => {
-      const r = getSteinmetz(mat, freqKHz);
-      const k = r ? (temp === 25 ? r.k25 : r.k100) : NaN;
-      return r && k > 0 && !isNaN(k);
-    })
-    .map(mat => {
-      const r          = getSteinmetz(mat, freqKHz);
-      const k          = temp === 25 ? r.k25    : r.k100;
-      const alpha      = temp === 25 ? r.alpha25 : r.alpha100;
-      const beta       = temp === 25 ? r.beta25  : r.beta100;
+    .map(mat => ({ mat, pts: pfSeries(mat, temp) }))
+    .filter(({ pts }) => pts.length > 0)
+    .map(({ mat, pts }) => {
       const isSelected = mat.name === selectedName;
       return {
         label:           mat.name,
-        data:            B_POINTS.map(B => ({
-          x: B,
-          y: k * Math.pow(freqKHz, alpha) * Math.pow(B, beta),
-        })),
+        bsat:            mat.bsat_mT,
+        data:            pts,
         parsing:         false,
+        spanGaps:        false,
         borderColor:     isSelected ? HIGHLIGHT : (selectedName ? DIM : paletteColor(mat)),
         backgroundColor: 'transparent',
         borderWidth:     isSelected ? 2.5 : 1.5,
-        pointRadius:     isSelected ? 3 : (selectedName ? 0 : 2),
+        pointRadius:     0,      // ~60 points per curve; dots would swamp the plot
+        pointHitRadius:  6,      // but keep the curve clickable
         tension:         0,
         order:           isSelected ? 0 : 1,
       };
@@ -494,16 +572,11 @@ function coreLossDatasets(activeMats, freqKHz, temp) {
 }
 
 // ── UI updates ────────────────────────────────────────────────────────────────
-function currentFreq() {
-  return Math.max(1, parseFloat(document.getElementById('freq').value) || 100);
-}
-
-function activeMaterials(freqKHz) {
+function activeMaterials() {
   return materials.filter(mat => {
-    if (getSteinmetz(mat, freqKHz) === null) return false;
     if (filterType !== 'All' && mat.type !== filterType) return false;
     if (filterMfr  !== 'All' && mat.manufacturer !== filterMfr) return false;
-    return true;
+    return hasPF(mat, 25) || hasPF(mat, 100);
   });
 }
 
@@ -521,31 +594,23 @@ function populateFilters() {
 }
 
 function updateCharts() {
-  const freq       = currentFreq();
-  const activeMats = activeMaterials(freq);
+  pvTarget = currentTarget();
+  const activeMats = activeMaterials();
 
-  // If the selected material has dropped out of range, deselect it
+  // If the selected material has been filtered out, deselect it
   if (selectedName && !activeMats.find(m => m.name === selectedName)) {
     selectedName = null;
   }
 
-  const colors = barColors(activeMats);
+  for (const chart of [pfChart25, pfChart100]) {
+    chart.options.scales.y.title.text = yAxisTitle();
+  }
+  pfChart25.data.datasets  = pfDatasets(activeMats, 25);
+  pfChart100.data.datasets = pfDatasets(activeMats, 100);
+  pfChart25.update('none');
+  pfChart100.update('none');
 
-  muChart.data.labels                        = activeMats.map(m => m.name);
-  muChart.data.datasets[0].data             = activeMats.map(m => m.mu);
-  muChart.data.datasets[0].backgroundColor  = colors;
-
-  bsatChart.data.labels                       = activeMats.map(m => m.name);
-  bsatChart.data.datasets[0].data            = activeMats.map(m => m.bsat_mT);
-  bsatChart.data.datasets[0].backgroundColor = [...colors];
-
-  muChart.update('none');
-  bsatChart.update('none');
-
-  coreLossChart25.data.datasets  = coreLossDatasets(activeMats, freq, 25);
-  coreLossChart25.update('none');
-  coreLossChart100.data.datasets = coreLossDatasets(activeMats, freq, 100);
-  coreLossChart100.update('none');
+  syncPresets();
 
   updateInfoCard(activeMats);
 }
@@ -596,90 +661,53 @@ function selectMaterial(name) {
 }
 
 // ── Chart construction ────────────────────────────────────────────────────────
-function makeBarChart(canvasId, valueKey, yLabel) {
-  const freq       = currentFreq();
-  const activeMats = activeMaterials(freq);
-  const ctx        = document.getElementById(canvasId).getContext('2d');
-  return new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: activeMats.map(m => m.name),
-      datasets: [{
-        data:            activeMats.map(m => m[valueKey]),
-        backgroundColor: barColors(activeMats),
-        borderRadius:    3,
-        borderSkipped:   false,
-      }],
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => `${ctx.formattedValue}${yLabel ? ' ' + yLabel : ''}` } },
-      },
-      scales: {
-        x: { grid: { display: false } },
-        y: {
-          beginAtZero: true,
-          title: { display: !!yLabel, text: yLabel, color: '#888', font: { size: 11 } },
-          grid: { color: 'rgba(0,0,0,0.05)' },
-        },
-      },
-      onClick(evt, elements) {
-        if (!elements.length) return;
-        // Look up name from the chart's current labels (not the full materials array)
-        const name = this.data.labels[elements[0].index];
-        selectMaterial(name);
-      },
-      onHover(evt, elements) { evt.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
-    },
-  });
-}
-
-function makeCoreLossChart(canvasId, temp) {
-  const freq       = currentFreq();
-  const activeMats = activeMaterials(freq);
-  const ctx        = document.getElementById(canvasId).getContext('2d');
+function makePFChart(canvasId, temp) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
   return new Chart(ctx, {
     type: 'line',
-    data: { datasets: coreLossDatasets(activeMats, freq, temp) },
+    data: { datasets: pfDatasets(activeMaterials(), temp) },
     options: {
       responsive: true,
       interaction: { mode: 'nearestCurve', intersect: false },
       plugins: {
         legend: {
-          position: 'right',
+          position: 'bottom',   // ~50 materials — a side legend truncates every label
           // Legend clicks select a material rather than toggling dataset visibility
           onClick(e, item) { selectMaterial(item.text); },
           onHover(e) { e.native.target.style.cursor = 'pointer'; },
           onLeave(e) { e.native.target.style.cursor = 'default'; },
-          labels: { boxWidth: 14, font: { size: 11 }, generateLabels: legendLabels },
+          labels: { boxWidth: 10, boxHeight: 10, padding: 8, font: { size: 10 },
+                    generateLabels: legendLabels },
         },
         tooltip: {
           callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toExponential(2)} kW/m³`,
+            title: items => `${Math.round(items[0].parsed.x)} kHz`,
+            label: (ctx) => {
+              const b    = ctx.raw.b;
+              const bsat = ctx.dataset.bsat;
+              const over = isFinite(bsat) && b > bsat ? ` ⚠ above Bsat ${bsat} mT` : '';
+              return `${ctx.dataset.label}: ${Math.round(ctx.parsed.y).toLocaleString()} Hz·T` +
+                     `  (B̂ ${b.toFixed(0)} mT${over})`;
+            },
           },
         },
       },
       scales: {
         x: {
           type: 'logarithmic',
-          title: { display: true, text: 'B (mT)', color: '#888', font: { size: 12 } },
-          grid: { color: 'rgba(0,0,0,0.05)' },
-          ticks: { callback: v => [10, 20, 50, 100, 200, 300].includes(Number(v)) ? v : '' },
-        },
-        y: {
-          type: 'logarithmic',
-          min: 1,
-          max: 10000,
-          title: { display: true, text: 'Pv (kW/m³)', color: '#888', font: { size: 12 } },
+          min: F_MIN_KHZ,
+          max: F_MAX_KHZ,
+          title: { display: true, text: 'f (kHz)', color: '#888', font: { size: 12 } },
           grid: { color: 'rgba(0,0,0,0.05)' },
           ticks: {
-            callback: v => {
-              const exp = Math.log10(v);
-              return Math.abs(exp - Math.round(exp)) < 1e-9 ? v : '';
-            },
+            callback: v => [100, 150, 200, 300, 500, 700, 1000, 2000, 3000, 5000, 10000].includes(Number(v)) ? v : '',
           },
+        },
+        y: {
+          beginAtZero: true,
+          title: { display: true, text: yAxisTitle(), color: '#888', font: { size: 12 } },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { callback: v => Number(v).toLocaleString() },
         },
       },
       onClick(evt, elements) {
@@ -695,13 +723,25 @@ function makeCoreLossChart(canvasId, temp) {
   });
 }
 
-function buildCharts() {
-  muChart          = makeBarChart('muChart',          'mu',      '');
-  bsatChart        = makeBarChart('bsatChart',        'bsat_mT', 'mT');
-  coreLossChart25  = makeCoreLossChart('coreLossChart25',  25);
-  coreLossChart100 = makeCoreLossChart('coreLossChart100', 100);
+// Light up whichever preset matches the current value, if any
+function syncPresets() {
+  for (const btn of document.querySelectorAll('.preset')) {
+    btn.classList.toggle('active', Number(btn.dataset.pv) === pvTarget);
+  }
+}
 
-  document.getElementById('freq').addEventListener('input', updateCharts);
+function buildCharts() {
+  pfChart25  = makePFChart('pfChart25',  25);
+  pfChart100 = makePFChart('pfChart100', 100);
+
+  document.getElementById('pvTarget').addEventListener('input', updateCharts);
+  for (const btn of document.querySelectorAll('.preset')) {
+    btn.addEventListener('click', () => {
+      document.getElementById('pvTarget').value = btn.dataset.pv;
+      updateCharts();
+    });
+  }
+  syncPresets();
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
