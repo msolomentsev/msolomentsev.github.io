@@ -129,6 +129,9 @@
       color: #999;
     }
 
+    /* uppercase maps the Greek mu onto capital Mu, which reads as a Latin M */
+    .info-prop-label .sym { text-transform: none; }
+
     .info-prop-value {
       font-size: 0.95rem;
       color: #222;
@@ -162,6 +165,54 @@
       margin-bottom: 0.75rem;
     }
 
+    .steinmetz { margin-top: 1.35rem; }
+
+    .steinmetz-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #999;
+      margin-bottom: 0.35rem;
+    }
+
+    .steinmetz-model {
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 0.7rem;
+    }
+
+    .steinmetz table { border-collapse: collapse; }
+
+    .steinmetz th, .steinmetz td {
+      padding: 0.32rem 1.1rem 0.32rem 0;
+      text-align: left;
+      white-space: nowrap;
+      font-size: 0.82rem;
+    }
+
+    .steinmetz thead th {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #aaa;
+      font-weight: 600;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    .steinmetz thead tr:first-child th { color: #777; padding-bottom: 0.15rem; }
+
+    /* k, alpha and beta are symbols, not words: uppercasing them yields K, A, B */
+    .steinmetz thead th.sym { text-transform: none; font-size: 0.8rem; color: #888; }
+
+    .steinmetz td { color: #333; font-variant-numeric: tabular-nums; }
+
+    .steinmetz tbody tr + tr td { border-top: 1px solid #f4f4f4; }
+
+    .steinmetz .grp { border-left: 1px solid #eaeaea; padding-left: 1.1rem; }
+
+    .steinmetz .none { color: #bbb; }
+
     .no-data-note {
       font-size: 0.8rem;
       color: #bbb;
@@ -194,6 +245,7 @@
 <nav>
   <a href="compare.html">Compare</a>
   <a href="material.html" class="active">Detail</a>
+  <a href="performance.html">Performance Factor</a>
 </nav>
 
 <div id="app">
@@ -203,9 +255,7 @@
   <div class="controls-row">
     <label>Material</label>
     <select id="matSelect"></select>
-    <label>Freq</label>
-    <input type="number" id="freq" value="100" min="1" max="5000" step="1">
-    <span class="unit">kHz</span>
+    <span class="unit">Curves are drawn at round frequencies across the material's fitted range</span>
   </div>
 
   <div class="info-card">
@@ -215,6 +265,7 @@
     </div>
     <div class="info-props" id="infoProps"></div>
     <p class="info-notes" id="infoNotes"></p>
+    <div class="steinmetz" id="steinmetz"></div>
   </div>
 
   <div class="charts-grid">
@@ -235,7 +286,13 @@
 <script>
 // ── Constants ─────────────────────────────────────────────────────────────────
 const B_POINTS   = [10, 15, 20, 30, 50, 75, 100, 150, 200, 300];
-const LINE_COLOR = '#4e79a7';
+const RAMP_LO    = '#4e79a7';   // lowest frequency curve
+const RAMP_HI    = '#c0392b';   // highest frequency curve
+const MAX_CURVES = 7;
+
+// Round-number ladders, finest first. The first tier that fits inside MAX_CURVES
+// wins, so a narrow range gets a fine spacing and a wide one falls back to decades.
+const MANTISSA_TIERS = [[1, 2, 3, 5, 7], [1, 2, 5], [1, 3], [1]];
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let materials        = [];
@@ -305,16 +362,69 @@ function parseCSV(text) {
   return [...map.values()];
 }
 
-function getSteinmetz(material, freqKHz) {
-  for (const r of material.ranges) {
-    if (freqKHz >= r.freq_min && freqKHz <= r.freq_max) return r;
+// ── Steinmetz helpers ─────────────────────────────────────────────────────────
+// Coefficients for one segment at one temperature, or null when the CSV is blank
+function coeffsAt(range, temp) {
+  const k     = temp === 25 ? range.k25     : range.k100;
+  const alpha = temp === 25 ? range.alpha25 : range.alpha100;
+  const beta  = temp === 25 ? range.beta25  : range.beta100;
+  if (!(k > 0) || !isFinite(alpha) || !(beta > 0)) return null;
+  return { k, alpha, beta };
+}
+
+// Span covered by the segments that actually have coefficients at this temperature
+function validRange(mat, temp) {
+  const segs = mat.ranges.filter(r =>
+    coeffsAt(r, temp) && isFinite(r.freq_min) && isFinite(r.freq_max) && r.freq_max > r.freq_min);
+  if (!segs.length) return null;
+  return {
+    lo: Math.min(...segs.map(r => r.freq_min)),
+    hi: Math.max(...segs.map(r => r.freq_max)),
+  };
+}
+
+// The segment covering f, but only if it carries usable coefficients
+function coeffsForFreq(mat, f, temp) {
+  for (const r of mat.ranges) {
+    if (f >= r.freq_min && f <= r.freq_max) {
+      const c = coeffsAt(r, temp);
+      if (c) return c;
+    }
   }
   return null;
 }
 
-// ── Rendering ─────────────────────────────────────────────────────────────────
-function currentFreq() {
-  return Math.max(1, parseFloat(document.getElementById('freq').value) || 100);
+// ── Picking the frequencies to draw ───────────────────────────────────────────
+// Values of the form mantissa x 10^n that land inside [lo, hi]
+function ladderValues(lo, hi, mantissas) {
+  const out = [];
+  for (let e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) {
+    for (const m of mantissas) {
+      const v = m * Math.pow(10, e);
+      if (v >= lo - 1e-9 && v <= hi + 1e-9) out.push(v);
+    }
+  }
+  return out.sort((a, b) => a - b);
+}
+
+// Finest ladder that yields at most MAX_CURVES values; bare lo if none fits
+function niceFreqs(lo, hi) {
+  for (const tier of MANTISSA_TIERS) {
+    const vals = ladderValues(lo, hi, tier);
+    if (vals.length && vals.length <= MAX_CURVES) return vals;
+  }
+  return [lo];
+}
+
+function formatFreq(f) {
+  return f >= 1000 ? `${+(f / 1000).toFixed(2)} MHz` : `${+f.toFixed(2)} kHz`;
+}
+
+// Blue at the low end of the range through to red at the high end
+function rampColor(t) {
+  const parse = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
+  const a = parse(RAMP_LO), b = parse(RAMP_HI);
+  return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`;
 }
 
 function updateInfoCard(mat) {
@@ -325,7 +435,7 @@ function updateInfoCard(mat) {
   else               { dsEl.hidden = true; }
 
   const props = [
-    { label: '&#956; (permeability)', value: isNaN(mat.mu)      ? '&mdash;' : mat.mu.toLocaleString() },
+    { label: '<span class="sym">&#956;</span> (permeability)', value: isNaN(mat.mu)      ? '&mdash;' : mat.mu.toLocaleString() },
     { label: 'B<sub>sat</sub>',       value: isNaN(mat.bsat_mT) ? '&mdash;' : `${mat.bsat_mT} mT` },
     { label: 'Type',                  value: mat.type         || '&mdash;' },
     { label: 'Manufacturer',          value: mat.manufacturer || '&mdash;' },
@@ -340,43 +450,82 @@ function updateInfoCard(mat) {
   const notesEl = document.getElementById('infoNotes');
   notesEl.textContent = mat.notes;
   notesEl.hidden      = !mat.notes;
+
+  document.getElementById('steinmetz').innerHTML = steinmetzTable(mat);
 }
 
-function buildDataset(mat, freqKHz, temp) {
-  const r = getSteinmetz(mat, freqKHz);
-  if (!r) return null;
-  const k     = temp === 25 ? r.k25    : r.k100;
-  const alpha = temp === 25 ? r.alpha25 : r.alpha100;
-  const beta  = temp === 25 ? r.beta25  : r.beta100;
-  if (!k || isNaN(k) || k <= 0) return null;
-  return {
-    label:           mat.name,
-    data:            B_POINTS.map(B => ({ x: B, y: k * Math.pow(freqKHz, alpha) * Math.pow(B, beta) })),
-    parsing:         false,
-    borderColor:     LINE_COLOR,
-    backgroundColor: 'transparent',
-    borderWidth:     2.5,
-    pointRadius:     3,
-    tension:         0,
-  };
+// One row per CSV segment, both temperature sets side by side
+function steinmetzTable(mat) {
+  const none = '<span class="none">&mdash;</span>';
+  const fk   = v => (v > 0 && isFinite(v)) ? v.toExponential(3) : none;
+  const fe   = v => isFinite(v) ? v.toFixed(3) : none;
+  const fr   = r => (isFinite(r.freq_min) && isFinite(r.freq_max))
+    ? `${r.freq_min.toLocaleString()} &ndash; ${r.freq_max.toLocaleString()}` : none;
+
+  const body = mat.ranges.map(r => `
+    <tr>
+      <td>${fr(r)}</td>
+      <td class="grp">${fk(r.k25)}</td><td>${fe(r.alpha25)}</td><td>${fe(r.beta25)}</td>
+      <td class="grp">${fk(r.k100)}</td><td>${fe(r.alpha100)}</td><td>${fe(r.beta100)}</td>
+    </tr>`).join('');
+
+  return `
+    <div class="steinmetz-label">Steinmetz coefficients</div>
+    <div class="steinmetz-model">P<sub>v</sub> [kW/m&sup3;] = k &middot; f[kHz]<sup>&alpha;</sup> &middot; B[mT]<sup>&beta;</sup></div>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th class="grp" colspan="3">25 &deg;C</th>
+          <th class="grp" colspan="3">100 &deg;C</th>
+        </tr>
+        <tr>
+          <th>Range (kHz)</th>
+          <th class="grp sym">k</th><th class="sym">&alpha;</th><th class="sym">&beta;</th>
+          <th class="grp sym">k</th><th class="sym">&alpha;</th><th class="sym">&beta;</th>
+        </tr>
+      </thead>
+      <tbody>${body}</tbody>
+    </table>`;
+}
+
+function buildDatasets(mat, temp) {
+  const span = validRange(mat, temp);
+  if (!span) return [];
+
+  const freqs = niceFreqs(span.lo, span.hi).filter(f => coeffsForFreq(mat, f, temp));
+  return freqs.map((f, i) => {
+    const c = coeffsForFreq(mat, f, temp);
+    const t = freqs.length > 1 ? i / (freqs.length - 1) : 0;
+    return {
+      label:           formatFreq(f),
+      data:            B_POINTS.map(B => ({ x: B, y: c.k * Math.pow(f, c.alpha) * Math.pow(B, c.beta) })),
+      parsing:         false,
+      borderColor:     rampColor(t),
+      backgroundColor: 'transparent',
+      borderWidth:     2,
+      pointRadius:     2.5,
+      tension:         0,
+    };
+  });
 }
 
 function updateCharts() {
   if (!selectedMat) return;
-  const freq = currentFreq();
 
   updateInfoCard(selectedMat);
 
-  const ds25  = buildDataset(selectedMat, freq, 25);
-  const ds100 = buildDataset(selectedMat, freq, 100);
+  const ds25  = buildDatasets(selectedMat, 25);
+  const ds100 = buildDatasets(selectedMat, 100);
 
-  coreLossChart25.data.datasets  = ds25  ? [ds25]  : [];
-  coreLossChart100.data.datasets = ds100 ? [ds100] : [];
+  coreLossChart25.data.datasets  = ds25;
+  coreLossChart100.data.datasets = ds100;
   coreLossChart25.update('none');
   coreLossChart100.update('none');
 
-  document.getElementById('noData25').textContent  = ds25  ? '' : 'No data at this frequency';
-  document.getElementById('noData100').textContent = ds100 ? '' : 'No data at this frequency';
+  const note = 'No Steinmetz coefficients at this temperature';
+  document.getElementById('noData25').textContent  = ds25.length  ? '' : note;
+  document.getElementById('noData100').textContent = ds100.length ? '' : note;
 }
 
 function makeCoreLossChart(canvasId) {
@@ -387,9 +536,15 @@ function makeCoreLossChart(canvasId) {
     options: {
       responsive: true,
       plugins: {
-        legend: { display: false },
+        legend: {
+          position: 'right',
+          title:  { display: true, text: 'Frequency', font: { size: 11 }, color: '#888' },
+          labels: { boxWidth: 14, font: { size: 11 } },
+        },
         tooltip: {
-          callbacks: { label: c => `${c.parsed.y.toExponential(2)} kW/m³` },
+          callbacks: {
+            label: c => `${c.dataset.label}: ${c.parsed.y.toExponential(2)} kW/m³`,
+          },
         },
       },
       scales: {
@@ -434,7 +589,6 @@ function buildPage() {
     sel.value   = sorted[0].name;
   }
 
-  document.getElementById('freq').addEventListener('input', updateCharts);
   updateCharts();
 }
 
