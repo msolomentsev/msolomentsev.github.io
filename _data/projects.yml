@@ -25,8 +25,10 @@
     KiCad plug-in that makes zones into perfect rectangles.
   url: https://github.com/msolomentsev/rectangulator
 
-  title: Quantum Computing for the Curious
-  image: /assets/images/
-  description: >
-    I was really confused by quantum computing, so I wrote the explainer I wanted to read.
-  url:
+
+
+  #title: Quantum Computing for the Curious
+  #image: /assets/images/
+  #description: >
+  #  I was really confused by quantum computing, so I wrote the explainer I wanted to read.
+  #url:
